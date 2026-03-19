@@ -1,0 +1,32 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Resolve dependencies
+        run: xcodebuild -resolvePackageDependencies
+
+      - name: Build and Run Tests
+        run: |
+          xcodebuild clean test \
+          -scheme ChatDemoApp \
+          -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.0' \
+          CODE_SIGNING_ALLOWED=NO
+          
